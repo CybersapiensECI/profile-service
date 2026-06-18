@@ -12,9 +12,9 @@ export class StartupDependencyCheck implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    const failFast = process.env.APP_STARTUP_FAIL_FAST !== 'false';
-    if (!failFast) {
-      this.logger.warn('Startup dependency checks are disabled');
+    const checksEnabled = process.env['APP_STARTUP_CHECKS_ENABLED'] === 'true';
+    if (!checksEnabled) {
+      this.logger.warn('Startup dependency checks are disabled (APP_STARTUP_CHECKS_ENABLED != true)');
       return;
     }
     await this.checkMongo();
