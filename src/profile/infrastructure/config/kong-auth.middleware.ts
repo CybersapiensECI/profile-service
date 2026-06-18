@@ -20,7 +20,7 @@ export class KongAuthMiddleware implements NestMiddleware {
       if (parts.length !== 3) return next();
 
       const decoded = Buffer.from(parts[1], 'base64url').toString('utf8');
-      const claims: Record<string, unknown> = JSON.parse(decoded);
+      const claims = JSON.parse(decoded) as Record<string, unknown>;
 
       const userId = this.readTextClaim(claims, 'sub');
       if (!userId) return next();
