@@ -54,13 +54,6 @@ export class UserManagementUseCase implements UserManagementPort {
     return this.findOrThrow(userId);
   }
 
-  async getUserByEmail(_email: string): Promise<User> {
-    throw new ProfileServiceException(
-      'Email lookup is handled by the Auth Service',
-      HttpStatus.NOT_IMPLEMENTED,
-    );
-  }
-
   async updateUser(userId: string, user: User): Promise<User> {
     if (user instanceof Student) return this.updateStudentUser(userId, user);
     if (user instanceof Admin) return this.updateAdminUser(userId, user);

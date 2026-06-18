@@ -11,8 +11,8 @@ export type UserDocumentType = HydratedDocument<UserDocument>;
   timestamps: { createdAt: 'createdAt', updatedAt: false },
 })
 export class UserDocument {
-  @Prop({ type: String, required: true })
-  _id!: string;
+  @Prop({ type: MongooseSchema.Types.Mixed, required: true })
+  _id!: unknown;
 
   @Prop({ required: true })
   name!: string;
@@ -21,11 +21,10 @@ export class UserDocument {
   gender!: GenderEnum;
 
   @Prop({ type: Date, default: null })
-  dateOfBirth: Date | null = null;
+  birthdate: Date | null = null;
 
   createdAt!: Date;
 
-  @Prop({ required: true, enum: UserType })
   userType!: UserType;
 }
 

@@ -23,8 +23,9 @@ export class StudentDocument extends UserDocument {
   @Prop({ type: String, default: null })
   studentCarnet: string | null = null;
 
+  // Java Spring stored this field as 'photo', not 'photoUrl'.
   @Prop({ type: String, default: null })
-  photoUrl: string | null = null;
+  photo: string | null = null;
 
   @Prop({ type: String, default: null })
   biography: string | null = null;
@@ -35,8 +36,9 @@ export class StudentDocument extends UserDocument {
   @Prop({ default: false })
   geolocationEnabled: boolean = false;
 
+  // Java Spring stored this field as 'scheduleAvailability' (singular).
   @Prop({ type: [ScheduleDocumentSchema], default: [] })
-  schedulesAvailability: ScheduleDocument[] = [];
+  scheduleAvailability: ScheduleDocument[] = [];
 
   @Prop({ type: [String], default: [] })
   tagsId: string[] = [];
