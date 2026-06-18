@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -17,6 +18,7 @@ import { UserPersistenceMapper } from './infrastructure/adapters/persistence/map
 // ── Infrastructure — adapters ───────────────────────────────────────────────
 import { UserRepositoryAdapter } from './infrastructure/adapters/adapter/user-repository.adapter';
 import { CloudinaryAdapter } from './infrastructure/adapters/adapter/cloudinary-adapter';
+import { UserType } from './infrastructure/adapters/persistence/entity/user-type.enum';
 import { RabbitMQFriendshipPublisher, RABBITMQ_CLIENT } from './infrastructure/external/rabbitmq-friendship.publisher';
 
 // ── Domain ports (tokens) ───────────────────────────────────────────────────
@@ -73,20 +75,36 @@ import { UserGamificationController } from './entrypoints/rest/controller/user-g
         name: UserDocument.name,
         schema: UserDocumentSchema,
         discriminators: [
-          { name: StudentDocument.name, schema: StudentDocumentSchema },
-          { name: AdminDocument.name, schema: AdminDocumentSchema },
-          { name: OrganizerDocument.name, schema: OrganizerDocumentSchema },
+          { name: StudentDocument.name, schema: StudentDocumentSchema, value: UserType.STUDENT },
+          { name: AdminDocument.name, schema: AdminDocumentSchema, value: UserType.ADMIN },
+          { name: OrganizerDocument.name, schema: OrganizerDocumentSchema, value: UserType.ORGANIZER },
         ],
       },
     ]),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: RABBITMQ_CLIENT,
-        transport: Transport.RMQ,
-        options: {
-          urls: [process.env.RABBITMQ_URL ?? 'amqp://localhost:5672'],
-          queue: process.env.RABBITMQ_QUEUE ?? 'friendship_queue',
-          queueOptions: { durable: true },
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => {
+          const ssl = config.get<string>('RABBITMQ_SSL_ENABLED') === 'true';
+          const protocol = ssl ? 'amqps' : 'amqp';
+          const host = config.get<string>('RABBITMQ_HOST') ?? 'localhost';
+          const port = config.get<string>('RABBITMQ_PORT') ?? '5672';
+          const user = config.get<string>('RABBITMQ_USERNAME') ?? '';
+          const pass = config.get<string>('RABBITMQ_PASSWORD') ?? '';
+          const vhost = config.get<string>('RABBITMQ_VHOST') ?? '/';
+          const credentials = user ? `${user}:${pass}@` : '';
+          const vhostPath = vhost === '/' ? '' : `/${vhost}`;
+          const url = `${protocol}://${credentials}${host}:${port}${vhostPath}`;
+          return {
+            transport: Transport.RMQ,
+            options: {
+              urls: [url],
+              queue: 'friendship_queue',
+              queueOptions: { durable: true },
+            },
+          };
         },
       },
     ]),

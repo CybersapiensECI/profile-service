@@ -38,10 +38,6 @@ async function bootstrap() {
       'User Profiles',
       'Operations related to profile content such as image uploads and schedules.',
     )
-    .addTag(
-      'User Security',
-      'Endpoints focused on password changes and security validation.',
-    )
     .addTag('Users - Deletion', 'Endpoint to permanently remove users.')
     .addTag(
       'Users - Internal',

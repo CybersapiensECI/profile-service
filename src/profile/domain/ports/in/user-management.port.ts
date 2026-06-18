@@ -8,7 +8,6 @@ export interface UserManagementPort {
   createAdminUser(admin: Admin): Promise<User>;
   deleteUser(userId: string): Promise<void>;
   getUser(userId: string): Promise<User>;
-  getUserByEmail(email: string): Promise<User>;
   updateUser(userId: string, user: User): Promise<User>;
   getAllUsers(): Promise<User[]>;
   getAllStudentProfiles(): Promise<Student[]>;
