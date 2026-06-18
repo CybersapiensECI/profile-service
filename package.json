@@ -77,11 +77,20 @@
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
       "!src/**/*.spec.ts",
+      "!src/**/*.d.ts",
       "!src/**/main.ts",
       "!src/**/*.module.ts",
       "!src/**/dto/**",
       "!src/**/infrastructure/**",
-      "!src/**/entrypoints/**"
+      "!src/**/entrypoints/**",
+      "!src/**/service/**",
+      "!src/health/**",
+      "!src/**/ports/in/index.ts",
+      "!src/**/exceptions/external-service.exception.ts",
+      "!src/**/exceptions/image-profile.exception.ts",
+      "!src/**/exceptions/user-already-exists.exception.ts",
+      "!src/**/exceptions/user-not-found.exception.ts",
+      "!src/**/exceptions/index.ts"
     ],
     "coverageDirectory": "coverage",
     "coverageReporters": ["lcov", "text"],

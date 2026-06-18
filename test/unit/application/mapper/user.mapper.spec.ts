@@ -197,7 +197,7 @@ describe('UserMapper', () => {
       req.gender = GenderEnum.FEMALE;
       req.career = CareerEnum.MATHEMATICS;
       req.semester = 3;
-      req.studentCarnet = '20231234';
+      req.studentCarnet = '2023123456';
       req.privacyLevel = PrivacyLevelEnum.PRIVATE;
       req.geolocationEnabled = true;
 
@@ -235,7 +235,14 @@ describe('UserMapper', () => {
     it('maps only defined fields', () => {
       const req = new UserStudentUpdateRequestDto();
       req.name = 'Updated';
-      expect(mapper.fromStudentUpdateRequest(req).name).toBe('Updated');
+      req.studentCarnet = '2023123456';
+      req.dateOfBirth = '2000-06-15';
+      req.geolocationEnabled = false;
+      const student = mapper.fromStudentUpdateRequest(req);
+      expect(student.name).toBe('Updated');
+      expect(student.studentCarnet).toBe('2023123456');
+      expect(student.dateOfBirth).toBeInstanceOf(Date);
+      expect(student.geolocationEnabled).toBe(false);
     });
   });
 
