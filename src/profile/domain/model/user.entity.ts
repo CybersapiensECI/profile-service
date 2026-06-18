@@ -4,7 +4,6 @@ import { GenderEnum } from './enum';
 export abstract class User {
   id: string;
   createdAt: Date;
-  verified: boolean = false;
   private _name: string;
   private _gender: GenderEnum;
   private _dateOfBirth: Date | null = null;

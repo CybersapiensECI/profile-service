@@ -1,0 +1,12 @@
+export { ActiveStatusRequestDto } from './active-status.request.dto';
+export { BatchProfileRequestDto } from './batch-profile.request.dto';
+export { FriendRequestDto } from './friend.request.dto';
+export { GeolocationRequestDto } from './geolocation.request.dto';
+export { LevelUpdateRequestDto } from './level-update.request.dto';
+export { ScheduleRequestDto } from './schedule.request.dto';
+export { TagRequestDto } from './tag.request.dto';
+export { UserAdminRequestDto } from './user-admin.request.dto';
+export { UserMatchProfileRequestDto } from './user-match-profile.request.dto';
+export { UserOrganizerRequestDto } from './user-organizer.request.dto';
+export { UserStudentRequestDto } from './user-student.request.dto';
+export { XpUpdateRequestDto } from './xp-update.request.dto';
