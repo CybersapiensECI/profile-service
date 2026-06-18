@@ -1,5 +1,6 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Patch } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OwnershipGuard } from '../guard/ownership.guard';
 import { USER_MANAGEMENT_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { UserManagementServicePort } from '../../../application/service/port/user-management-service.port';
 import { UserMapper } from '../../../application/mapper/user.mapper';
@@ -8,6 +9,7 @@ import { UserAdminUpdateRequestDto } from '../../../application/dto/request/user
 import { UserOrganizerUpdateRequestDto } from '../../../application/dto/request/user-organizer-update.request.dto';
 
 @ApiTags('Users - Update')
+@UseGuards(OwnershipGuard)
 @Controller('api/v1/users')
 export class UserUpdateController {
   constructor(

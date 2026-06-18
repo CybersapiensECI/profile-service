@@ -12,6 +12,36 @@ export class UserQueryController {
     private readonly userService: UserManagementServicePort,
   ) {}
 
+  // Static routes MUST be declared before parameterized routes so NestJS
+  // does not match 'student-profiles', 'tags', 'batch' as :userId values.
+
+  @Get()
+  @ApiOperation({ summary: 'Obtain all users' })
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
+  async getAllUsers() {
+    return this.userService.getAllUsers();
+  }
+
+  @Get('student-profiles')
+  @ApiOperation({ summary: 'Obtain all student profiles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Student profiles retrieved successfully',
+  })
+  async getAllStudentProfiles() {
+    return this.userService.getAllStudentProfiles();
+  }
+
+  @Get('tags')
+  @ApiOperation({ summary: 'Obtain tag catalog with categories' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tag catalog retrieved successfully',
+  })
+  async getTagCatalog() {
+    return this.userService.getTagCatalog();
+  }
+
   @Get(':userId')
   @ApiOperation({
     summary: 'Obtain user by ID',
@@ -23,33 +53,16 @@ export class UserQueryController {
     return this.userService.getUser(userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Obtain all users' })
-  @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
-  async getAllUsers() {
-    return this.userService.getAllUsers();
-  }
-
-  @Get('student-profiles')
-  @ApiOperation({ summary: 'Obtain all student profiles' })
-  @ApiResponse({ status: 200, description: 'Student profiles retrieved successfully' })
-  async getAllStudentProfiles() {
-    return this.userService.getAllStudentProfiles();
-  }
-
-  @Get('tags')
-  @ApiOperation({ summary: 'Obtain tag catalog with categories' })
-  @ApiResponse({ status: 200, description: 'Tag catalog retrieved successfully' })
-  async getTagCatalog() {
-    return this.userService.getTagCatalog();
-  }
-
   @Post('batch')
   @ApiOperation({
     summary: 'Obtain a batch of user profiles by IDs',
-    description: 'Returns minimal profile info (id, name, biography, photoUrl) for a list of user IDs.',
+    description:
+      'Returns minimal profile info (id, name, biography, photoUrl) for a list of user IDs.',
   })
-  @ApiResponse({ status: 200, description: 'Batch profiles retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Batch profiles retrieved successfully',
+  })
   async getUsersByIds(@Body() request: BatchProfileRequestDto) {
     return this.userService.getUsersByIds(request.ids);
   }

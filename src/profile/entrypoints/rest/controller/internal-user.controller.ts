@@ -1,9 +1,11 @@
-import { Controller, Get, HttpCode, HttpStatus, Inject, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Inject, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { InternalServiceGuard } from '../guard/internal-service.guard';
 import { INTERNAL_USER_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { InternalUserServicePort } from '../../../application/service/port/internal-user-service.port';
 
 @ApiTags('Internal')
+@UseGuards(InternalServiceGuard)
 @Controller('api/v1/internal')
 export class InternalUserController {
   constructor(

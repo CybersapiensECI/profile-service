@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OwnershipGuard } from '../guard/ownership.guard';
 import { USER_TAG_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { UserTagServicePort } from '../../../application/service/port/user-tag-service.port';
 import { TagRequestDto } from '../../../application/dto/request/tag.request.dto';
@@ -29,6 +30,7 @@ export class UserTagController {
   }
 
   @Post(':userId/tags')
+  @UseGuards(OwnershipGuard)
   @ApiOperation({ summary: 'Add a tag to a student' })
   @ApiResponse({ status: 200, description: 'Tag added successfully' })
   @ApiResponse({ status: 400, description: 'Tag does not exist or user is not a student' })
@@ -38,6 +40,7 @@ export class UserTagController {
   }
 
   @Delete(':userId/tags/:tagId')
+  @UseGuards(OwnershipGuard)
   @ApiOperation({ summary: 'Remove a tag from a student' })
   @ApiResponse({ status: 200, description: 'Tag removed successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })

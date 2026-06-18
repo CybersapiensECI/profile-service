@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { ProfileServiceException } from '../../domain/exceptions/profile-service.exception';
 import { Admin } from '../../domain/model/admin';
 import { Organizer } from '../../domain/model/organizer';
 import { Schedule } from '../../domain/model/schedule';
@@ -29,7 +30,10 @@ export class UserMapper {
     if (user instanceof Student) return this.toStudentResponse(user);
     if (user instanceof Admin) return this.toAdminResponse(user);
     if (user instanceof Organizer) return this.toOrganizerResponse(user);
-    throw new Error(`Unknown user type: ${user?.constructor?.name}`);
+    throw new ProfileServiceException(
+      `Unknown user type: ${user?.constructor?.name}`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 
   toStudentResponse(student: Student): StudentProfileResponseDto {
@@ -176,11 +180,14 @@ export class UserMapper {
     if (req.gender !== undefined) student.gender = req.gender;
     if (req.career !== undefined) student.career = req.career;
     if (req.semester !== undefined) student.semester = req.semester;
-    if (req.studentCarnet !== undefined) student.studentCarnet = req.studentCarnet;
+    if (req.studentCarnet !== undefined)
+      student.studentCarnet = req.studentCarnet;
     if (req.biography !== undefined) student.biography = req.biography ?? null;
     if (req.privacyLevel !== undefined) student.privacyLevel = req.privacyLevel;
-    if (req.dateOfBirth !== undefined) student.dateOfBirth = new Date(req.dateOfBirth);
-    if (req.geolocationEnabled !== undefined) student.geolocationEnabled = req.geolocationEnabled;
+    if (req.dateOfBirth !== undefined)
+      student.dateOfBirth = new Date(req.dateOfBirth);
+    if (req.geolocationEnabled !== undefined)
+      student.geolocationEnabled = req.geolocationEnabled;
     return student;
   }
 

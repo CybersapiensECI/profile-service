@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OwnershipGuard } from '../guard/ownership.guard';
 import { USER_FRIEND_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { UserFriendServicePort } from '../../../application/service/port/user-friend-service.port';
 import { FriendRequestDto } from '../../../application/dto/request/friend.request.dto';
@@ -21,6 +22,7 @@ export class UserFriendController {
   }
 
   @Post(':userId/friends')
+  @UseGuards(OwnershipGuard)
   @ApiOperation({
     summary: 'Add a friend to a student',
     description: 'Adds a bidirectional friendship between the student and the specified friend.',
@@ -33,6 +35,7 @@ export class UserFriendController {
   }
 
   @Delete(':userId/friends/:friendId')
+  @UseGuards(OwnershipGuard)
   @ApiOperation({
     summary: 'Remove a friend from a student',
     description: 'Removes the bidirectional friendship between the student and the specified friend.',

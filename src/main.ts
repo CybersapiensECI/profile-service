@@ -31,7 +31,7 @@ async function bootstrap() {
     )
     .addTag('Users - Reading', 'APIs to retrieve user and profile information.')
     .addTag(
-      'Users - Updating',
+      'Users - Update',
       'APIs to update user profile fields and settings.',
     )
     .addTag(
@@ -40,7 +40,7 @@ async function bootstrap() {
     )
     .addTag('Users - Deletion', 'Endpoint to permanently remove users.')
     .addTag(
-      'Users - Internal',
+      'Internal',
       'Internal-only endpoints for inter-service communication.',
     )
     .build();

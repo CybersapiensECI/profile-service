@@ -44,6 +44,8 @@ obj/x86/
 bld/
 [Oo]bj/
 [Oo]ut/
+# Exception: NestJS hexagonal architecture uses ports/out/ for output port interfaces
+!src/**/ports/out/
 [Ll]og/
 [Ll]ogs/
 

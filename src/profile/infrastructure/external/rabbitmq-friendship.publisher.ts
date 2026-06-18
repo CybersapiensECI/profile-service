@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 import { FriendshipCreatedEventDto } from '../../application/dto/event/friendship-created.event.dto';
 import { EventPublisherPort } from '../../domain/ports/out/event-publisher.port';
 
@@ -18,6 +19,6 @@ export class RabbitMQFriendshipPublisher implements EventPublisherPort {
       userId2,
       createdAt: new Date(),
     };
-    this.client.emit('friendship.created', event);
+    await lastValueFrom(this.client.emit('friendship.created', event));
   }
 }

@@ -112,7 +112,7 @@ export class UserRepositoryAdapter implements UserRepositoryPort {
       .filter((user): user is Organizer => user instanceof Organizer);
   }
 
-  async fingAllAdmins(): Promise<Admin[]> {
+  async findAllAdmins(): Promise<Admin[]> {
     const docs = await this.userMongoRepository.findByUserType(UserType.ADMIN);
     return docs
       .map((doc) => this.userMapper.toDomainByType(doc))

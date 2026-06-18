@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Inject, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OwnershipGuard } from '../guard/ownership.guard';
 import { USER_SCHEDULE_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { UserScheduleServicePort } from '../../../application/service/port/user-schedule-service.port';
 import { UserMapper } from '../../../application/mapper/user.mapper';
 import { ScheduleRequestDto } from '../../../application/dto/request/schedule.request.dto';
 
 @ApiTags('User Profiles')
+@UseGuards(OwnershipGuard)
 @Controller('api/v1/users')
 export class UserScheduleController {
   constructor(

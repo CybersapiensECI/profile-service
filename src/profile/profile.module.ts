@@ -20,6 +20,7 @@ import { UserRepositoryAdapter } from './infrastructure/adapters/adapter/user-re
 import { CloudinaryAdapter } from './infrastructure/adapters/adapter/cloudinary-adapter';
 import { UserType } from './infrastructure/adapters/persistence/entity/user-type.enum';
 import { RabbitMQFriendshipPublisher, RABBITMQ_CLIENT } from './infrastructure/external/rabbitmq-friendship.publisher';
+import { MatchingServiceAdapter } from './infrastructure/external/matching/matching-service.adapter';
 
 // ── Domain ports (tokens) ───────────────────────────────────────────────────
 import {
@@ -128,14 +129,7 @@ import { UserGamificationController } from './entrypoints/rest/controller/user-g
     UserPersistenceMapper,
     { provide: USER_REPOSITORY_PORT, useClass: UserRepositoryAdapter },
     { provide: IMAGE_STORAGE_PORT, useClass: CloudinaryAdapter },
-    {
-      provide: TAG_CATALOG_PORT,
-      useValue: {
-        getAllCategoriesWithTags: () => Promise.resolve([]),
-        tagExists: () => Promise.resolve(true),
-        getTagNameById: (id: string) => Promise.resolve(id),
-      },
-    },
+    { provide: TAG_CATALOG_PORT, useClass: MatchingServiceAdapter },
     { provide: EVENT_PUBLISHER_PORT, useClass: RabbitMQFriendshipPublisher },
 
     // ── Application mapper ────────────────────────────────────────────────────
