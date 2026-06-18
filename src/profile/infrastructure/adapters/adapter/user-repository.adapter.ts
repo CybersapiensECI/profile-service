@@ -8,7 +8,7 @@ import { UserNotFoundException } from '../../../domain/exceptions/user-not-found
 import { UserRepositoryPort } from '../../../domain/ports/out/user-repository.port';
 import { OrganizerDocument } from '../persistence/entity/organizer.document';
 import { StudentDocument } from '../persistence/entity/student.document';
-import { UserDocument } from '../persistence/entity/user.document';
+import type { UserDocument } from '../persistence/entity/user.document';
 import { UserType } from '../persistence/entity/user-type.enum';
 import { UserPersistenceMapper } from '../persistence/mapper/user-persistence.mapper';
 import { UserMongoRepository } from '../persistence/repository/user-mongo.repository';
