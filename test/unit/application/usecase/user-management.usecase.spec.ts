@@ -147,10 +147,14 @@ describe('UserManagementUseCase', () => {
       const patch = new Student();
       patch.name = 'New Name';
       patch.career = CareerEnum.COMPUTER_SCIENCE;
+      patch.studentCarnet = '2023123456';
+      patch.privacyLevel = PrivacyLevelEnum.PRIVATE;
       await useCase.updateUser('u1', patch);
 
       expect(existing.name).toBe('New Name');
       expect(existing.career).toBe(CareerEnum.COMPUTER_SCIENCE);
+      expect(existing.studentCarnet).toBe('2023123456');
+      expect(existing.privacyLevel).toBe(PrivacyLevelEnum.PRIVATE);
     });
 
     it('updates admin fields', async () => {
@@ -185,6 +189,57 @@ describe('UserManagementUseCase', () => {
     it('throws BAD_REQUEST for unsupported user type in update', async () => {
       const unknown = Object.create(null) as Student;
       await expect(useCase.updateUser('u1', unknown)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+    });
+
+    it('throws BAD_REQUEST when admin patch targets a non-admin stored user', async () => {
+      repo.findById.mockResolvedValue(makeStudent('u1'));
+      await expect(useCase.updateUser('u1', new Admin())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+    });
+
+    it('throws BAD_REQUEST when organizer patch targets a non-organizer stored user', async () => {
+      repo.findById.mockResolvedValue(makeStudent('u1'));
+      await expect(useCase.updateUser('u1', new Organizer())).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+    });
+  });
+
+  describe('Student and User domain model validation', () => {
+    it('throws for name shorter than 2 characters', () => {
+      expect(() => { makeStudent().name = 'X'; }).toThrow();
+    });
+
+    it('throws for null gender', () => {
+      const s = new Student();
+      expect(() => { s.gender = null as unknown as GenderEnum; }).toThrow();
+    });
+
+    it('throws for a future dateOfBirth', () => {
+      expect(() => { makeStudent().dateOfBirth = new Date('2099-01-01'); }).toThrow();
+    });
+
+    it('throws for null career', () => {
+      const s = new Student();
+      expect(() => { s.career = null as unknown as CareerEnum; }).toThrow();
+    });
+
+    it('throws for semester out of range', () => {
+      expect(() => { makeStudent().semester = 11; }).toThrow();
+    });
+
+    it('throws for null privacy level', () => {
+      const s = new Student();
+      expect(() => { s.privacyLevel = null as unknown as PrivacyLevelEnum; }).toThrow();
+    });
+
+    it('throws for blank photoUrl', () => {
+      expect(() => { makeStudent().photoUrl = '   '; }).toThrow();
+    });
+
+    it('throws for biography exceeding 200 characters', () => {
+      expect(() => { makeStudent().biography = 'a'.repeat(201); }).toThrow();
+    });
+
+    it('throws for carnet with invalid format', () => {
+      expect(() => { makeStudent().studentCarnet = 'ABC123'; }).toThrow();
     });
   });
 });

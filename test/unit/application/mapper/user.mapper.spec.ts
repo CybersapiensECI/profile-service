@@ -232,10 +232,15 @@ describe('UserMapper', () => {
   });
 
   describe('fromStudentUpdateRequest', () => {
-    it('maps only defined fields', () => {
+    it('maps all defined fields', () => {
       const req = new UserStudentUpdateRequestDto();
       req.name = 'Updated';
+      req.gender = GenderEnum.FEMALE;
+      req.career = CareerEnum.SYSTEMS_ENGINEERING;
+      req.semester = 2;
       req.studentCarnet = '2023123456';
+      req.biography = 'Updated bio';
+      req.privacyLevel = PrivacyLevelEnum.PRIVATE;
       req.dateOfBirth = '2000-06-15';
       req.geolocationEnabled = false;
       const student = mapper.fromStudentUpdateRequest(req);
@@ -247,18 +252,26 @@ describe('UserMapper', () => {
   });
 
   describe('fromAdminUpdateRequest', () => {
-    it('maps only defined fields', () => {
+    it('maps all defined fields', () => {
       const req = new UserAdminUpdateRequestDto();
       req.name = 'Updated Admin';
-      expect(mapper.fromAdminUpdateRequest(req).name).toBe('Updated Admin');
+      req.gender = GenderEnum.MALE;
+      const admin = mapper.fromAdminUpdateRequest(req);
+      expect(admin.name).toBe('Updated Admin');
+      expect(admin.gender).toBe(GenderEnum.MALE);
     });
   });
 
   describe('fromOrganizerUpdateRequest', () => {
-    it('maps only defined fields', () => {
+    it('maps all defined fields', () => {
       const req = new UserOrganizerUpdateRequestDto();
+      req.name = 'Updated Org';
+      req.gender = GenderEnum.OTHER;
       req.contactInfo = 'new@contact.com';
-      expect(mapper.fromOrganizerUpdateRequest(req).contactInfo).toBe('new@contact.com');
+      const org = mapper.fromOrganizerUpdateRequest(req);
+      expect(org.contactInfo).toBe('new@contact.com');
+      expect(org.name).toBe('Updated Org');
+      expect(org.gender).toBe(GenderEnum.OTHER);
     });
   });
 
