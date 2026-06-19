@@ -1,0 +1,46 @@
+services:
+
+  profile-service:
+    build:
+      context: .
+    container_name: profile-service
+    ports:
+      - "${PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB:-profileservice}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5671}
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST:-/}
+      - RABBITMQ_SSL_ENABLED=${RABBITMQ_SSL_ENABLED:-false}
+      - MATCHING_SERVICE_URL=${MATCHING_SERVICE_URL}
+      - MATCHING_SERVICE_PATH=${MATCHING_SERVICE_PATH}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - APP_STARTUP_CHECKS_ENABLED=true
+    networks:
+      - backend
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/v1/health | grep '\"status\":\"UP\"' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  backend:
+    driver: bridge

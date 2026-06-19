@@ -28,7 +28,7 @@ export class StartupDependencyCheck implements OnApplicationBootstrap {
     try {
       if (!this.mongoConnection.db) throw new Error('DB not initialized');
       await this.mongoConnection.db.command({ ping: 1 });
-    } catch (e) {
+    } catch {
       throw new Error('Startup failed: cannot connect to MongoDB');
     }
   }
@@ -36,7 +36,7 @@ export class StartupDependencyCheck implements OnApplicationBootstrap {
   private async checkCloudinary(): Promise<void> {
     try {
       await cloudinary.api.ping();
-    } catch (e) {
+    } catch {
       throw new Error('Startup failed: cannot connect to Cloudinary');
     }
   }

@@ -6,7 +6,6 @@ import { User } from '../../../domain/model/user.entity';
 import { InvalidInputException } from '../../../domain/exceptions/invalid-input.exception';
 import { UserNotFoundException } from '../../../domain/exceptions/user-not-found.exception';
 import { UserRepositoryPort } from '../../../domain/ports/out/user-repository.port';
-import { AdminDocument } from '../persistence/entity/admin.document';
 import { OrganizerDocument } from '../persistence/entity/organizer.document';
 import { StudentDocument } from '../persistence/entity/student.document';
 import { UserType } from '../persistence/entity/user-type.enum';
@@ -33,7 +32,7 @@ export class UserRepositoryAdapter implements UserRepositoryPort {
       const saved = await this.userMongoRepository.save(
         this.userMapper.adminToDocument(user),
       );
-      return this.userMapper.adminToDomain(saved as unknown as AdminDocument);
+      return this.userMapper.adminToDomain(saved);
     }
     if (user instanceof Organizer) {
       const saved = await this.userMongoRepository.save(
@@ -72,7 +71,7 @@ export class UserRepositoryAdapter implements UserRepositoryPort {
         this.userMapper.adminToDocument(user),
       );
       if (!saved) throw new UserNotFoundException(`User ${id} not found`);
-      return this.userMapper.adminToDomain(saved as unknown as AdminDocument);
+      return this.userMapper.adminToDomain(saved);
     }
     if (user instanceof Organizer) {
       const saved = await this.userMongoRepository.update(
