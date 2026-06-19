@@ -62,12 +62,16 @@ describe('UserGamificationUseCase', () => {
 
     it('throws NOT_FOUND when user does not exist', async () => {
       repo.findById.mockResolvedValue(null);
-      await expect(useCase.updateXp('x', 10)).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(useCase.updateXp('x', 10)).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
     });
 
     it('throws BAD_REQUEST when user is not a student', async () => {
       repo.findById.mockResolvedValue(makeAdmin());
-      await expect(useCase.updateXp('admin-1', 10)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      await expect(useCase.updateXp('admin-1', 10)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -84,12 +88,16 @@ describe('UserGamificationUseCase', () => {
 
     it('throws NOT_FOUND when user does not exist', async () => {
       repo.findById.mockResolvedValue(null);
-      await expect(useCase.updateLevel('x', 1)).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(useCase.updateLevel('x', 1)).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
     });
 
     it('throws BAD_REQUEST when user is not a student', async () => {
       repo.findById.mockResolvedValue(makeAdmin());
-      await expect(useCase.updateLevel('admin-1', 1)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      await expect(useCase.updateLevel('admin-1', 1)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -117,12 +125,16 @@ describe('UserGamificationUseCase', () => {
 
     it('throws NOT_FOUND when user does not exist', async () => {
       repo.findById.mockResolvedValue(null);
-      await expect(useCase.updateActiveStatus('x', true)).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(useCase.updateActiveStatus('x', true)).rejects.toMatchObject(
+        { status: HttpStatus.NOT_FOUND },
+      );
     });
 
     it('throws BAD_REQUEST when user is not a student', async () => {
       repo.findById.mockResolvedValue(makeAdmin());
-      await expect(useCase.updateActiveStatus('admin-1', true)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      await expect(
+        useCase.updateActiveStatus('admin-1', true),
+      ).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
     });
   });
 });

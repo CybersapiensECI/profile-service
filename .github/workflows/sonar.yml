@@ -43,7 +43,6 @@ jobs:
       - name: Run tests with coverage
         env:
           NODE_ENV: test
-          MONGO_URI: ${{ secrets.MONGO_URI_TEST }}
           CLOUDINARY_CLOUD_NAME: test
           CLOUDINARY_API_KEY: test
           CLOUDINARY_API_SECRET: test
@@ -53,7 +52,7 @@ jobs:
           RABBITMQ_PASSWORD: guest
           RABBITMQ_SSL_ENABLED: 'false'
           INTERNAL_API_KEY: test-key
-        run: npm test -- --coverage --passWithNoTests
+        run: npm run test:cov
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

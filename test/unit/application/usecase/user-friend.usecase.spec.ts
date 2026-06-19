@@ -27,7 +27,17 @@ function makeAdmin(id = 'admin-1'): Admin {
 }
 
 function makeRepo(): jest.Mocked<UserRepositoryPort> {
-  return { save: jest.fn(), findById: jest.fn(), update: jest.fn(), delete: jest.fn(), findAll: jest.fn(), findAllStudents: jest.fn(), findAllOrganizers: jest.fn(), findAllAdmins: jest.fn(), findAllByIds: jest.fn() };
+  return {
+    save: jest.fn(),
+    findById: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    findAll: jest.fn(),
+    findAllStudents: jest.fn(),
+    findAllOrganizers: jest.fn(),
+    findAllAdmins: jest.fn(),
+    findAllByIds: jest.fn(),
+  };
 }
 
 function makePublisher(): jest.Mocked<EventPublisherPort> {
@@ -60,12 +70,16 @@ describe('UserFriendUseCase', () => {
 
     it('throws NOT_FOUND when user does not exist', async () => {
       repo.findById.mockResolvedValue(null);
-      await expect(useCase.getUserFriends('x')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(useCase.getUserFriends('x')).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
     });
 
     it('throws BAD_REQUEST when user is not a student', async () => {
       repo.findById.mockResolvedValue(makeAdmin());
-      await expect(useCase.getUserFriends('admin-1')).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      await expect(useCase.getUserFriends('admin-1')).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -73,18 +87,25 @@ describe('UserFriendUseCase', () => {
     it('adds friend bidirectionally and publishes event', async () => {
       const s1 = makeStudent('u1');
       const s2 = makeStudent('u2');
-      repo.findById.mockImplementation((id) => Promise.resolve(id === 'u1' ? s1 : s2));
+      repo.findById.mockImplementation((id) =>
+        Promise.resolve(id === 'u1' ? s1 : s2),
+      );
       repo.update.mockResolvedValue(s1);
 
       await useCase.addFriendToStudent('u1', 'u2');
 
       expect(s1.friendsId).toContain('u2');
       expect(s2.friendsId).toContain('u1');
-      expect(publisher.publishFriendshipCreated).toHaveBeenCalledWith('u1', 'u2');
+      expect(publisher.publishFriendshipCreated).toHaveBeenCalledWith(
+        'u1',
+        'u2',
+      );
     });
 
     it('throws when user tries to add themselves', async () => {
-      await expect(useCase.addFriendToStudent('u1', 'u1')).rejects.toMatchObject({
+      await expect(
+        useCase.addFriendToStudent('u1', 'u1'),
+      ).rejects.toMatchObject({
         message: expect.stringContaining('themselves'),
       });
     });
@@ -93,14 +114,18 @@ describe('UserFriendUseCase', () => {
       repo.findById.mockImplementation((id) =>
         Promise.resolve(id === 'u1' ? makeStudent('u1') : null),
       );
-      await expect(useCase.addFriendToStudent('u1', 'u2')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(
+        useCase.addFriendToStudent('u1', 'u2'),
+      ).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
     });
 
     it('throws when friend is not a student', async () => {
       repo.findById.mockImplementation((id) =>
         Promise.resolve(id === 'u1' ? makeStudent('u1') : makeAdmin('u2')),
       );
-      await expect(useCase.addFriendToStudent('u1', 'u2')).rejects.toMatchObject({
+      await expect(
+        useCase.addFriendToStudent('u1', 'u2'),
+      ).rejects.toMatchObject({
         message: expect.stringContaining('STUDENT'),
       });
     });
@@ -108,8 +133,12 @@ describe('UserFriendUseCase', () => {
     it('throws when user is already a friend', async () => {
       const s1 = makeStudent('u1');
       s1.friendsId = ['u2'];
-      repo.findById.mockImplementation((id) => Promise.resolve(id === 'u1' ? s1 : makeStudent('u2')));
-      await expect(useCase.addFriendToStudent('u1', 'u2')).rejects.toMatchObject({
+      repo.findById.mockImplementation((id) =>
+        Promise.resolve(id === 'u1' ? s1 : makeStudent('u2')),
+      );
+      await expect(
+        useCase.addFriendToStudent('u1', 'u2'),
+      ).rejects.toMatchObject({
         message: expect.stringContaining('already a friend'),
       });
     });
@@ -118,7 +147,9 @@ describe('UserFriendUseCase', () => {
       repo.findById.mockImplementation((id) =>
         Promise.resolve(id === 'u2' ? makeStudent('u2') : null),
       );
-      await expect(useCase.addFriendToStudent('u1', 'u2')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(
+        useCase.addFriendToStudent('u1', 'u2'),
+      ).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
     });
   });
 
@@ -128,7 +159,9 @@ describe('UserFriendUseCase', () => {
       s1.friendsId = ['u2'];
       const s2 = makeStudent('u2');
       s2.friendsId = ['u1'];
-      repo.findById.mockImplementation((id) => Promise.resolve(id === 'u1' ? s1 : s2));
+      repo.findById.mockImplementation((id) =>
+        Promise.resolve(id === 'u1' ? s1 : s2),
+      );
       repo.update.mockResolvedValue(s1);
 
       await useCase.removeFriendFromStudent('u1', 'u2');
@@ -142,7 +175,9 @@ describe('UserFriendUseCase', () => {
       s1.friendsId = ['u2'];
       const s2 = makeStudent('u2');
       s2.friendsId = [];
-      repo.findById.mockImplementation((id) => Promise.resolve(id === 'u1' ? s1 : s2));
+      repo.findById.mockImplementation((id) =>
+        Promise.resolve(id === 'u1' ? s1 : s2),
+      );
       repo.update.mockResolvedValue(s1);
 
       await useCase.removeFriendFromStudent('u1', 'u2');
@@ -154,12 +189,16 @@ describe('UserFriendUseCase', () => {
       const s1 = makeStudent('u1');
       s1.friendsId = [];
       repo.findById.mockResolvedValue(s1);
-      await expect(useCase.removeFriendFromStudent('u1', 'u2')).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      await expect(
+        useCase.removeFriendFromStudent('u1', 'u2'),
+      ).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
     });
 
     it('throws NOT_FOUND when user does not exist', async () => {
       repo.findById.mockResolvedValue(null);
-      await expect(useCase.removeFriendFromStudent('x', 'u2')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      await expect(
+        useCase.removeFriendFromStudent('x', 'u2'),
+      ).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
     });
   });
 });
