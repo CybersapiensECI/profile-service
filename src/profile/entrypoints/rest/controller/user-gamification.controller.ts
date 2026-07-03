@@ -1,13 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Patch } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { USER_GAMIFICATION_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { UserGamificationServicePort } from '../../../application/service/port/user-gamification-service.port';
+import { InternalServiceGuard } from '../guard/internal-service.guard';
 import { XpUpdateRequestDto } from '../../../application/dto/request/xp-update.request.dto';
 import { LevelUpdateRequestDto } from '../../../application/dto/request/level-update.request.dto';
 import { ActiveStatusRequestDto } from '../../../application/dto/request/active-status.request.dto';
 
 @ApiTags('Users - Update')
 @Controller('api/v1/users')
+@UseGuards(InternalServiceGuard)
 export class UserGamificationController {
   constructor(
     @Inject(USER_GAMIFICATION_SERVICE_PORT)

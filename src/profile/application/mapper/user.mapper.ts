@@ -186,8 +186,6 @@ export class UserMapper {
     if (req.privacyLevel !== undefined) student.privacyLevel = req.privacyLevel;
     if (req.dateOfBirth !== undefined)
       student.dateOfBirth = new Date(req.dateOfBirth);
-    if (req.geolocationEnabled !== undefined)
-      student.geolocationEnabled = req.geolocationEnabled;
     return student;
   }
 

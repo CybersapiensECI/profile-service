@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserMapper } from '../mapper/user.mapper';
-import { UserFriendUseCase } from '../usecase/user-friend.usecase';
+import type { UserFriendPort } from '../../domain/ports/in/user-friend.port';
+import { USER_FRIEND_PORT } from '../../domain/ports/injection-tokens';
 import type { UserFriendServicePort } from './port/user-friend-service.port';
 import { UserResponseDto } from '../dto/response/user.response.dto';
 
 @Injectable()
 export class UserFriendService implements UserFriendServicePort {
   constructor(
-    private readonly friendUseCase: UserFriendUseCase,
+    @Inject(USER_FRIEND_PORT)
+    private readonly friendUseCase: UserFriendPort,
     private readonly userMapper: UserMapper,
   ) {}
 

@@ -56,7 +56,7 @@ describe('UserMediaUseCase', () => {
 
       await useCase.updateProfileImage('user-1', VALID_PNG, 'image/png');
 
-      expect(storage.uploadProfileImage).toHaveBeenCalledWith(VALID_PNG, 'user-1');
+      expect(storage.uploadProfileImage).toHaveBeenCalledWith(VALID_PNG, 'user-1', 'image/png');
       expect(student.photoUrl).toBe('https://cdn.example.com/photo.png');
     });
 

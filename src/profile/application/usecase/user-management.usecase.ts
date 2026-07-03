@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ProfileServiceException } from '../../domain/exceptions/profile-service.exception';
 import { Admin } from '../../domain/model/admin';
 import { CategoryWithTags } from '../../domain/model/category-with-tags';
@@ -7,19 +7,25 @@ import { Student } from '../../domain/model/student';
 import { User } from '../../domain/model/user.entity';
 import type { UserManagementPort } from '../../domain/ports/in/user-management.port';
 import {
+  IMAGE_STORAGE_PORT,
   TAG_CATALOG_PORT,
   USER_REPOSITORY_PORT,
 } from '../../domain/ports/injection-tokens';
+import type { ImageStoragePort } from '../../domain/ports/out/image-storage.port';
 import type { TagCatalogPort } from '../../domain/ports/out/tag-catalog.port';
 import type { UserRepositoryPort } from '../../domain/ports/out/user-repository.port';
 
 @Injectable()
 export class UserManagementUseCase implements UserManagementPort {
+  private readonly logger = new Logger(UserManagementUseCase.name);
+
   constructor(
     @Inject(USER_REPOSITORY_PORT)
     private readonly userRepository: UserRepositoryPort,
     @Inject(TAG_CATALOG_PORT)
     private readonly tagCatalogPort: TagCatalogPort,
+    @Inject(IMAGE_STORAGE_PORT)
+    private readonly imageStoragePort: ImageStoragePort,
   ) {}
 
   async createStudentUser(student: Student): Promise<User> {
@@ -47,6 +53,16 @@ export class UserManagementUseCase implements UserManagementPort {
       }
     }
 
+    if (user instanceof Student) {
+      try {
+        await this.imageStoragePort.deleteProfileImage(userId);
+      } catch (e) {
+        this.logger.warn(
+          `Could not delete profile image for user ${userId}: ${e instanceof Error ? e.message : String(e)}`,
+        );
+      }
+    }
+
     await this.userRepository.delete(userId);
   }
 
@@ -71,6 +87,14 @@ export class UserManagementUseCase implements UserManagementPort {
 
   async getAllStudentProfiles(): Promise<Student[]> {
     return this.userRepository.findAllStudents();
+  }
+
+  async getAllOrganizerProfiles(): Promise<Organizer[]> {
+    return this.userRepository.findAllOrganizers();
+  }
+
+  async getAllAdminProfiles(): Promise<Admin[]> {
+    return this.userRepository.findAllAdmins();
   }
 
   async getUsersByIds(ids: string[]): Promise<User[]> {
@@ -114,7 +138,6 @@ export class UserManagementUseCase implements UserManagementPort {
     if (request.career != null) student.career = request.career;
     if (request.semester != null) student.semester = request.semester;
     if (request.dateOfBirth != null) student.dateOfBirth = request.dateOfBirth;
-    if (request.tagsId != null) student.tagsId = request.tagsId;
 
     return this.userRepository.update(userId, student);
   }

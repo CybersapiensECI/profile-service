@@ -15,6 +15,8 @@ export interface UserManagementServicePort {
   updateUser(userId: string, user: User): Promise<UserResponseDto>;
   getAllUsers(): Promise<UserResponseDto[]>;
   getAllStudentProfiles(): Promise<UserResponseDto[]>;
+  getAllOrganizerProfiles(): Promise<UserResponseDto[]>;
+  getAllAdminProfiles(): Promise<UserResponseDto[]>;
   getUsersByIds(ids: string[]): Promise<BatchProfileResponseDto[]>;
   getTagCatalog(): Promise<CategoryWithTagsResponseDto[]>;
 }
