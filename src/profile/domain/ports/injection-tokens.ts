@@ -4,6 +4,14 @@ export const IMAGE_STORAGE_PORT = 'IMAGE_STORAGE_PORT';
 export const TAG_CATALOG_PORT = 'TAG_CATALOG_PORT';
 export const EVENT_PUBLISHER_PORT = 'EVENT_PUBLISHER_PORT';
 
+// In-port tokens (use cases — injected by application services)
+export const USER_MANAGEMENT_PORT = 'USER_MANAGEMENT_PORT';
+export const USER_FRIEND_PORT = 'USER_FRIEND_PORT';
+export const USER_GAMIFICATION_PORT = 'USER_GAMIFICATION_PORT';
+export const USER_MEDIA_PORT = 'USER_MEDIA_PORT';
+export const USER_SCHEDULE_PORT = 'USER_SCHEDULE_PORT';
+export const USER_TAG_PORT = 'USER_TAG_PORT';
+
 // Application service port tokens (used by controllers)
 export const USER_MANAGEMENT_SERVICE_PORT = 'USER_MANAGEMENT_SERVICE_PORT';
 export const USER_SCHEDULE_SERVICE_PORT = 'USER_SCHEDULE_SERVICE_PORT';

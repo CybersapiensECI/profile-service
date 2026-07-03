@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserMapper } from '../mapper/user.mapper';
-import { UserGamificationUseCase } from '../usecase/user-gamification.usecase';
+import type { UserGamificationPort } from '../../domain/ports/in/user-gamification.port';
+import { USER_GAMIFICATION_PORT } from '../../domain/ports/injection-tokens';
 import type { UserGamificationServicePort } from './port/user-gamification-service.port';
 import { UserResponseDto } from '../dto/response/user.response.dto';
 
 @Injectable()
 export class UserGamificationService implements UserGamificationServicePort {
   constructor(
-    private readonly gamificationUseCase: UserGamificationUseCase,
+    @Inject(USER_GAMIFICATION_PORT)
+    private readonly gamificationUseCase: UserGamificationPort,
     private readonly userMapper: UserMapper,
   ) {}
 

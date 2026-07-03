@@ -28,6 +28,12 @@ import {
   IMAGE_STORAGE_PORT,
   TAG_CATALOG_PORT,
   EVENT_PUBLISHER_PORT,
+  USER_MANAGEMENT_PORT,
+  USER_FRIEND_PORT,
+  USER_GAMIFICATION_PORT,
+  USER_MEDIA_PORT,
+  USER_SCHEDULE_PORT,
+  USER_TAG_PORT,
   USER_MANAGEMENT_SERVICE_PORT,
   USER_SCHEDULE_SERVICE_PORT,
   USER_TAG_SERVICE_PORT,
@@ -135,13 +141,13 @@ import { UserGamificationController } from './entrypoints/rest/controller/user-g
     // ── Application mapper ────────────────────────────────────────────────────
     UserMapper,
 
-    // ── Use cases ─────────────────────────────────────────────────────────────
-    UserManagementUseCase,
-    UserScheduleUseCase,
-    UserTagUseCase,
-    UserFriendUseCase,
-    UserMediaUseCase,
-    UserGamificationUseCase,
+    // ── Use cases (registered under port tokens for DIP) ──────────────────────
+    { provide: USER_MANAGEMENT_PORT, useClass: UserManagementUseCase },
+    { provide: USER_FRIEND_PORT, useClass: UserFriendUseCase },
+    { provide: USER_GAMIFICATION_PORT, useClass: UserGamificationUseCase },
+    { provide: USER_MEDIA_PORT, useClass: UserMediaUseCase },
+    { provide: USER_SCHEDULE_PORT, useClass: UserScheduleUseCase },
+    { provide: USER_TAG_PORT, useClass: UserTagUseCase },
 
     // ── Services (provided with port tokens for controller injection) ──────────
     { provide: USER_MANAGEMENT_SERVICE_PORT, useClass: UserManagementService },

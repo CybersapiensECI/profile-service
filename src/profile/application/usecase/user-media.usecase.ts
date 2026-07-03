@@ -11,8 +11,8 @@ import {
 import type { ImageStoragePort } from '../../domain/ports/out/image-storage.port';
 import type { UserRepositoryPort } from '../../domain/ports/out/user-repository.port';
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg']);
 
 @Injectable()
 export class UserMediaUseCase implements UserMediaPort {
@@ -32,7 +32,7 @@ export class UserMediaUseCase implements UserMediaPort {
       throw new InvalidImageInputException('The file is empty');
     if (file.length > MAX_IMAGE_SIZE)
       throw new InvalidImageInputException('Image exceeds 5MB limit');
-    if (!ALLOWED_TYPES.includes(contentType))
+    if (!ALLOWED_TYPES.has(contentType))
       throw new InvalidImageInputException(
         'Invalid format. Only PNG and JPEG are allowed',
       );
@@ -41,6 +41,7 @@ export class UserMediaUseCase implements UserMediaPort {
     student.photoUrl = await this.imageStoragePort.uploadProfileImage(
       file,
       userId,
+      contentType,
     );
     return this.userRepository.update(userId, student);
   }

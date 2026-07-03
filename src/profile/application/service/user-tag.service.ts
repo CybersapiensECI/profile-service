@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserMapper } from '../mapper/user.mapper';
-import { UserTagUseCase } from '../usecase/user-tag.usecase';
+import type { UserTagPort } from '../../domain/ports/in/user-tag.port';
+import { USER_TAG_PORT } from '../../domain/ports/injection-tokens';
 import type { UserTagServicePort } from './port/user-tag-service.port';
 import { UserResponseDto } from '../dto/response/user.response.dto';
 
 @Injectable()
 export class UserTagService implements UserTagServicePort {
   constructor(
-    private readonly tagUseCase: UserTagUseCase,
+    @Inject(USER_TAG_PORT)
+    private readonly tagUseCase: UserTagPort,
     private readonly userMapper: UserMapper,
   ) {}
 

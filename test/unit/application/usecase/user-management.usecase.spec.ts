@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { UserManagementUseCase } from 'src/profile/application/usecase/user-management.usecase';
 import type { UserRepositoryPort } from 'src/profile/domain/ports/out/user-repository.port';
 import type { TagCatalogPort } from 'src/profile/domain/ports/out/tag-catalog.port';
+import type { ImageStoragePort } from 'src/profile/domain/ports/out/image-storage.port';
 import { Student } from 'src/profile/domain/model/student';
 import { Admin } from 'src/profile/domain/model/admin';
 import { Organizer } from 'src/profile/domain/model/organizer';
@@ -45,15 +46,21 @@ function makeCatalog(): jest.Mocked<TagCatalogPort> {
   return { getAllCategoriesWithTags: jest.fn(), tagExists: jest.fn(), getTagNameById: jest.fn() };
 }
 
+function makeImageStorage(): jest.Mocked<ImageStoragePort> {
+  return { uploadProfileImage: jest.fn(), deleteProfileImage: jest.fn() };
+}
+
 describe('UserManagementUseCase', () => {
   let useCase: UserManagementUseCase;
   let repo: jest.Mocked<UserRepositoryPort>;
   let catalog: jest.Mocked<TagCatalogPort>;
+  let imageStorage: jest.Mocked<ImageStoragePort>;
 
   beforeEach(() => {
     repo = makeRepo();
     catalog = makeCatalog();
-    useCase = new UserManagementUseCase(repo, catalog);
+    imageStorage = makeImageStorage();
+    useCase = new UserManagementUseCase(repo, catalog, imageStorage);
   });
 
   it('createStudentUser saves and returns the student', async () => {
@@ -112,8 +119,30 @@ describe('UserManagementUseCase', () => {
   describe('deleteUser', () => {
     it('deletes a student with no friends', async () => {
       repo.findById.mockResolvedValue(makeStudent());
+      imageStorage.deleteProfileImage.mockResolvedValue(undefined);
       await useCase.deleteUser('u1');
       expect(repo.delete).toHaveBeenCalledWith('u1');
+    });
+
+    it('deletes profile image from storage when deleting a student', async () => {
+      repo.findById.mockResolvedValue(makeStudent('u1'));
+      imageStorage.deleteProfileImage.mockResolvedValue(undefined);
+      await useCase.deleteUser('u1');
+      expect(imageStorage.deleteProfileImage).toHaveBeenCalledWith('u1');
+    });
+
+    it('still deletes the user even when image storage cleanup fails', async () => {
+      repo.findById.mockResolvedValue(makeStudent('u1'));
+      imageStorage.deleteProfileImage.mockRejectedValue(new Error('storage error'));
+      await useCase.deleteUser('u1');
+      expect(repo.delete).toHaveBeenCalledWith('u1');
+    });
+
+    it('does not call image storage when deleting a non-student', async () => {
+      repo.findById.mockResolvedValue(makeAdmin('a1'));
+      await useCase.deleteUser('a1');
+      expect(imageStorage.deleteProfileImage).not.toHaveBeenCalled();
+      expect(repo.delete).toHaveBeenCalledWith('a1');
     });
 
     it('removes user from friends lists before deleting', async () => {
@@ -155,6 +184,18 @@ describe('UserManagementUseCase', () => {
       expect(existing.career).toBe(CareerEnum.COMPUTER_SCIENCE);
       expect(existing.studentCarnet).toBe('2023123456');
       expect(existing.privacyLevel).toBe(PrivacyLevelEnum.PRIVATE);
+    });
+
+    it('does NOT wipe tagsId when updating a student with an empty patch', async () => {
+      const existing = makeStudent('u1');
+      existing.tagsId = ['tag1', 'tag2'];
+      repo.findById.mockResolvedValue(existing);
+      repo.update.mockResolvedValue(existing);
+
+      const patch = new Student();
+      await useCase.updateUser('u1', patch);
+
+      expect(existing.tagsId).toEqual(['tag1', 'tag2']);
     });
 
     it('updates admin fields', async () => {

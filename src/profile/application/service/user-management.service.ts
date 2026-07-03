@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Admin } from '../../domain/model/admin';
 import { Organizer } from '../../domain/model/organizer';
 import { Student } from '../../domain/model/student';
 import { User } from '../../domain/model/user.entity';
-import { UserManagementUseCase } from '../usecase/user-management.usecase';
+import {
+  USER_MANAGEMENT_PORT,
+} from '../../domain/ports/injection-tokens';
+import type { UserManagementPort } from '../../domain/ports/in/user-management.port';
 import { UserMapper } from '../mapper/user.mapper';
 import type { UserManagementServicePort } from './port/user-management-service.port';
 import { BatchProfileResponseDto } from '../dto/response/batch-profile.response.dto';
@@ -14,7 +17,8 @@ import { UserResponseDto } from '../dto/response/user.response.dto';
 @Injectable()
 export class UserManagementService implements UserManagementServicePort {
   constructor(
-    private readonly managementUseCase: UserManagementUseCase,
+    @Inject(USER_MANAGEMENT_PORT)
+    private readonly managementUseCase: UserManagementPort,
     private readonly userMapper: UserMapper,
   ) {}
 
@@ -55,6 +59,16 @@ export class UserManagementService implements UserManagementServicePort {
   async getAllStudentProfiles(): Promise<UserResponseDto[]> {
     const students = await this.managementUseCase.getAllStudentProfiles();
     return students.map((s) => this.userMapper.toResponse(s));
+  }
+
+  async getAllOrganizerProfiles(): Promise<UserResponseDto[]> {
+    const organizers = await this.managementUseCase.getAllOrganizerProfiles();
+    return organizers.map((o) => this.userMapper.toResponse(o));
+  }
+
+  async getAllAdminProfiles(): Promise<UserResponseDto[]> {
+    const admins = await this.managementUseCase.getAllAdminProfiles();
+    return admins.map((a) => this.userMapper.toResponse(a));
   }
 
   async getUsersByIds(ids: string[]): Promise<BatchProfileResponseDto[]> {

@@ -7,9 +7,13 @@ import { ImageStoragePort } from '../../../domain/ports/out/image-storage.port';
 export class CloudinaryAdapter implements ImageStoragePort {
   private readonly logger = new Logger(CloudinaryAdapter.name);
 
-  async uploadProfileImage(file: Buffer, userId: string): Promise<string> {
+  async uploadProfileImage(
+    file: Buffer,
+    userId: string,
+    contentType: string,
+  ): Promise<string> {
     try {
-      const base64 = `data:image/jpeg;base64,${file.toString('base64')}`;
+      const base64 = `data:${contentType};base64,${file.toString('base64')}`;
 
       const result = await cloudinary.uploader.upload(base64, {
         folder: 'profile_pictures',

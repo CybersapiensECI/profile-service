@@ -242,12 +242,10 @@ describe('UserMapper', () => {
       req.biography = 'Updated bio';
       req.privacyLevel = PrivacyLevelEnum.PRIVATE;
       req.dateOfBirth = '2000-06-15';
-      req.geolocationEnabled = false;
       const student = mapper.fromStudentUpdateRequest(req);
       expect(student.name).toBe('Updated');
       expect(student.studentCarnet).toBe('2023123456');
       expect(student.dateOfBirth).toBeInstanceOf(Date);
-      expect(student.geolocationEnabled).toBe(false);
     });
   });
 

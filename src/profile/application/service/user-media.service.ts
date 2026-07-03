@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserMapper } from '../mapper/user.mapper';
-import { UserMediaUseCase } from '../usecase/user-media.usecase';
+import type { UserMediaPort } from '../../domain/ports/in/user-media.port';
+import { USER_MEDIA_PORT } from '../../domain/ports/injection-tokens';
 import type { UserMediaServicePort } from './port/user-media-service.port';
 import { UserProfilePhotoResponseDto } from '../dto/response/user-profile-photo.response.dto';
 import { UserResponseDto } from '../dto/response/user.response.dto';
@@ -8,7 +9,8 @@ import { UserResponseDto } from '../dto/response/user.response.dto';
 @Injectable()
 export class UserMediaService implements UserMediaServicePort {
   constructor(
-    private readonly mediaUseCase: UserMediaUseCase,
+    @Inject(USER_MEDIA_PORT)
+    private readonly mediaUseCase: UserMediaPort,
     private readonly userMapper: UserMapper,
   ) {}
 

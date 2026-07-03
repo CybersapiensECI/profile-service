@@ -1,9 +1,13 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ProfileServiceException } from '../../domain/exceptions/profile-service.exception';
 import { Student } from '../../domain/model/student';
 import { PrivacyLevelEnum } from '../../domain/model/enum';
-import { UserManagementUseCase } from '../usecase/user-management.usecase';
-import { UserFriendUseCase } from '../usecase/user-friend.usecase';
+import type { UserManagementPort } from '../../domain/ports/in/user-management.port';
+import type { UserFriendPort } from '../../domain/ports/in/user-friend.port';
+import {
+  USER_MANAGEMENT_PORT,
+  USER_FRIEND_PORT,
+} from '../../domain/ports/injection-tokens';
 import { UserMapper } from '../mapper/user.mapper';
 import type { InternalUserServicePort } from './port/internal-user-service.port';
 import { UserMatchProfileResponseDto } from '../dto/response/user-match-profile.response.dto';
@@ -11,8 +15,10 @@ import { UserMatchProfileResponseDto } from '../dto/response/user-match-profile.
 @Injectable()
 export class InternalUserService implements InternalUserServicePort {
   constructor(
-    private readonly managementUseCase: UserManagementUseCase,
-    private readonly friendUseCase: UserFriendUseCase,
+    @Inject(USER_MANAGEMENT_PORT)
+    private readonly managementUseCase: UserManagementPort,
+    @Inject(USER_FRIEND_PORT)
+    private readonly friendUseCase: UserFriendPort,
     private readonly userMapper: UserMapper,
   ) {}
 

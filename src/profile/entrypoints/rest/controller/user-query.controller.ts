@@ -32,6 +32,26 @@ export class UserQueryController {
     return this.userService.getAllStudentProfiles();
   }
 
+  @Get('organizer-profiles')
+  @ApiOperation({ summary: 'Obtain all organizer profiles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Organizer profiles retrieved successfully',
+  })
+  async getAllOrganizerProfiles() {
+    return this.userService.getAllOrganizerProfiles();
+  }
+
+  @Get('admin-profiles')
+  @ApiOperation({ summary: 'Obtain all admin profiles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Admin profiles retrieved successfully',
+  })
+  async getAllAdminProfiles() {
+    return this.userService.getAllAdminProfiles();
+  }
+
   @Get('tags')
   @ApiOperation({ summary: 'Obtain tag catalog with categories' })
   @ApiResponse({

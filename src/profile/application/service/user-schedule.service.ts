@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Schedule } from '../../domain/model/schedule';
 import { UserMapper } from '../mapper/user.mapper';
-import { UserScheduleUseCase } from '../usecase/user-schedule.usecase';
+import type { UserSchedulePort } from '../../domain/ports/in/user-schedule.port';
+import { USER_SCHEDULE_PORT } from '../../domain/ports/injection-tokens';
 import type { UserScheduleServicePort } from './port/user-schedule-service.port';
 import { UserResponseDto } from '../dto/response/user.response.dto';
 
 @Injectable()
 export class UserScheduleService implements UserScheduleServicePort {
   constructor(
-    private readonly scheduleUseCase: UserScheduleUseCase,
+    @Inject(USER_SCHEDULE_PORT)
+    private readonly scheduleUseCase: UserSchedulePort,
     private readonly userMapper: UserMapper,
   ) {}
 

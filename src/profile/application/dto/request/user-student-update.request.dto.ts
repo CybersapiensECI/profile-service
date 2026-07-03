@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean,
   IsDateString,
   IsEnum,
   IsInt,
@@ -12,7 +11,11 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { CareerEnum, GenderEnum, PrivacyLevelEnum } from '../../../domain/model/enum';
+import {
+  CareerEnum,
+  GenderEnum,
+  PrivacyLevelEnum,
+} from '../../../domain/model/enum';
 
 export class UserStudentUpdateRequestDto {
   @ApiProperty({ example: 'María López', required: false })
@@ -21,12 +24,18 @@ export class UserStudentUpdateRequestDto {
   @Length(2, 50)
   name?: string;
 
-  @ApiProperty({ description: 'Allowed values: MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY', required: false })
+  @ApiProperty({
+    description: 'Allowed values: MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY',
+    required: false,
+  })
   @IsOptional()
   @IsEnum(GenderEnum)
   gender?: GenderEnum;
 
-  @ApiProperty({ description: 'Allowed values: SYSTEMS_ENGINEERING, ...', required: false })
+  @ApiProperty({
+    description: 'Allowed values: SYSTEMS_ENGINEERING, ...',
+    required: false,
+  })
   @IsOptional()
   @IsEnum(CareerEnum)
   career?: CareerEnum;
@@ -50,7 +59,10 @@ export class UserStudentUpdateRequestDto {
   @MaxLength(200)
   biography?: string;
 
-  @ApiProperty({ description: 'Allowed values: PUBLIC, PRIVATE, MATCH_ONLY', required: false })
+  @ApiProperty({
+    description: 'Allowed values: PUBLIC, PRIVATE, MATCH_ONLY',
+    required: false,
+  })
   @IsOptional()
   @IsEnum(PrivacyLevelEnum)
   privacyLevel?: PrivacyLevelEnum;
@@ -59,9 +71,4 @@ export class UserStudentUpdateRequestDto {
   @IsOptional()
   @IsDateString()
   dateOfBirth?: string;
-
-  @ApiProperty({ example: false, required: false })
-  @IsOptional()
-  @IsBoolean()
-  geolocationEnabled?: boolean;
 }
