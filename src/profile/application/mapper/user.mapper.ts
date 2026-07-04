@@ -143,6 +143,7 @@ export class UserMapper {
 
   fromStudentRequest(req: UserStudentRequestDto): Student {
     const student = new Student();
+    student.id = req.userId;
     student.name = req.name;
     student.gender = req.gender;
     student.career = req.career;

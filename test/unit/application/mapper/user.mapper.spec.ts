@@ -193,6 +193,7 @@ describe('UserMapper', () => {
   describe('fromStudentRequest', () => {
     it('maps request to Student domain', () => {
       const req = new UserStudentRequestDto();
+      req.userId = '5a1e3c2a-0000-4000-8000-000000000001';
       req.name = 'New Student';
       req.gender = GenderEnum.FEMALE;
       req.career = CareerEnum.MATHEMATICS;
@@ -204,6 +205,7 @@ describe('UserMapper', () => {
       const student = mapper.fromStudentRequest(req);
 
       expect(student).toBeInstanceOf(Student);
+      expect(student.id).toBe('5a1e3c2a-0000-4000-8000-000000000001');
       expect(student.name).toBe('New Student');
       expect(student.semester).toBe(3);
       expect(student.tagsId).toEqual([]);
