@@ -1,8 +1,10 @@
-import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InternalServiceGuard } from '../guard/internal-service.guard';
-import { INTERNAL_USER_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
+import { INTERNAL_USER_SERVICE_PORT, USER_FRIEND_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
 import type { InternalUserServicePort } from '../../../application/service/port/internal-user-service.port';
+import type { UserFriendServicePort } from '../../../application/service/port/user-friend-service.port';
+import { FriendRequestDto } from '../../../application/dto/request/friend.request.dto';
 
 @ApiTags('Internal')
 @UseGuards(InternalServiceGuard)
@@ -11,7 +13,37 @@ export class InternalUserController {
   constructor(
     @Inject(INTERNAL_USER_SERVICE_PORT)
     private readonly internalUserService: InternalUserServicePort,
+    @Inject(USER_FRIEND_SERVICE_PORT)
+    private readonly userFriendService: UserFriendServicePort,
   ) {}
+
+  @Get('users/:userId/friends')
+  @ApiOperation({
+    summary: 'Get all friend IDs for a student (service-to-service)',
+    description:
+      'Same data as the public /api/v1/users/:userId/friends, reachable without a ' +
+      'user JWT for callers like matching-service that act on behalf of two users at once.',
+  })
+  @ApiResponse({ status: 200, description: 'Friends retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getUserFriends(@Param('userId') userId: string): Promise<string[]> {
+    return this.userFriendService.getUserFriends(userId);
+  }
+
+  @Post('users/:userId/friends')
+  @ApiOperation({
+    summary: 'Add a bidirectional friendship (service-to-service)',
+    description:
+      'Used by matching-service when a match is accepted: neither side of the match has a ' +
+      "JWT representing the other user, so this can't go through the public, OwnershipGuard-" +
+      'protected route.',
+  })
+  @ApiResponse({ status: 200, description: 'Friend added successfully' })
+  @ApiResponse({ status: 400, description: 'User is not a student' })
+  @ApiResponse({ status: 404, description: 'User or friend not found' })
+  async addFriend(@Param('userId') userId: string, @Body() request: FriendRequestDto) {
+    return this.userFriendService.addFriend(userId, request.friendId);
+  }
 
   @Get('users/:userId/geolocation')
   @ApiOperation({ summary: 'Check if a student has geolocation enabled' })
