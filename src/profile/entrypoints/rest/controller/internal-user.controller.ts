@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InternalServiceGuard } from '../guard/internal-service.guard';
 import { INTERNAL_USER_SERVICE_PORT, USER_FRIEND_SERVICE_PORT } from '../../../domain/ports/injection-tokens';
@@ -43,6 +43,19 @@ export class InternalUserController {
   @ApiResponse({ status: 404, description: 'User or friend not found' })
   async addFriend(@Param('userId') userId: string, @Body() request: FriendRequestDto) {
     return this.userFriendService.addFriend(userId, request.friendId);
+  }
+
+  @Delete('users/:userId/friends/:friendId')
+  @ApiOperation({
+    summary: 'Remove a bidirectional friendship (service-to-service)',
+    description:
+      'Used by matching-service when unfriending: same rationale as the POST above, no user ' +
+      'JWT is available on either side of the pair for this server-to-server call.',
+  })
+  @ApiResponse({ status: 200, description: 'Friend removed successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async removeFriend(@Param('userId') userId: string, @Param('friendId') friendId: string) {
+    return this.userFriendService.removeFriend(userId, friendId);
   }
 
   @Get('users/:userId/geolocation')
