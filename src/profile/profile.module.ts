@@ -1,6 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // ── Config & middleware ─────────────────────────────────────────────────────
@@ -19,7 +17,7 @@ import { UserPersistenceMapper } from './infrastructure/adapters/persistence/map
 import { UserRepositoryAdapter } from './infrastructure/adapters/adapter/user-repository.adapter';
 import { CloudinaryAdapter } from './infrastructure/adapters/adapter/cloudinary-adapter';
 import { UserType } from './infrastructure/adapters/persistence/entity/user-type.enum';
-import { RabbitMQFriendshipPublisher, RABBITMQ_CLIENT } from './infrastructure/external/rabbitmq-friendship.publisher';
+import { RabbitMQFriendshipPublisher } from './infrastructure/external/rabbitmq-friendship.publisher';
 import { MatchingServiceAdapter } from './infrastructure/external/matching/matching-service.adapter';
 import { IdentityEventConsumer } from './infrastructure/external/rabbitmq/identity-event.consumer';
 
@@ -87,33 +85,6 @@ import { UserGamificationController } from './entrypoints/rest/controller/user-g
           { name: AdminDocument.name, schema: AdminDocumentSchema, value: UserType.ADMIN },
           { name: OrganizerDocument.name, schema: OrganizerDocumentSchema, value: UserType.ORGANIZER },
         ],
-      },
-    ]),
-    ClientsModule.registerAsync([
-      {
-        name: RABBITMQ_CLIENT,
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => {
-          const ssl = config.get<string>('RABBITMQ_SSL_ENABLED') === 'true';
-          const protocol = ssl ? 'amqps' : 'amqp';
-          const host = config.get<string>('RABBITMQ_HOST') ?? 'localhost';
-          const port = config.get<string>('RABBITMQ_PORT') ?? '5672';
-          const user = config.get<string>('RABBITMQ_USERNAME') ?? '';
-          const pass = config.get<string>('RABBITMQ_PASSWORD') ?? '';
-          const vhost = config.get<string>('RABBITMQ_VHOST') ?? '/';
-          const credentials = user ? `${user}:${pass}@` : '';
-          const vhostPath = vhost === '/' ? '' : `/${vhost}`;
-          const url = `${protocol}://${credentials}${host}:${port}${vhostPath}`;
-          return {
-            transport: Transport.RMQ,
-            options: {
-              urls: [url],
-              queue: 'friendship_queue',
-              queueOptions: { durable: true },
-            },
-          };
-        },
       },
     ]),
   ],
