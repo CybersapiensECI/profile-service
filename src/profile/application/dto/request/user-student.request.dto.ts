@@ -7,26 +7,43 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   Matches,
   Max,
   MaxLength,
   Min,
 } from 'class-validator';
-import { CareerEnum, GenderEnum, PrivacyLevelEnum } from '../../../domain/model/enum';
+import {
+  CareerEnum,
+  GenderEnum,
+  PrivacyLevelEnum,
+} from '../../../domain/model/enum';
 
 export class UserStudentRequestDto {
+  @ApiProperty({
+    description: 'User id issued by identity-service',
+    example: '5a1e3c2a-...',
+  })
+  @IsUUID()
+  @IsNotEmpty({ message: 'userId is required' })
+  userId: string;
+
   @ApiProperty({ example: 'María López' })
   @IsString()
   @IsNotEmpty({ message: 'Name is required' })
   @Length(2, 50)
   name: string;
 
-  @ApiProperty({ description: 'Allowed values: MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY' })
+  @ApiProperty({
+    description: 'Allowed values: MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY',
+  })
   @IsEnum(GenderEnum, { message: 'Gender is required' })
   gender: GenderEnum;
 
-  @ApiProperty({ description: 'Allowed values: SYSTEMS_ENGINEERING, CIVIL_ENGINEERING, ...' })
+  @ApiProperty({
+    description: 'Allowed values: SYSTEMS_ENGINEERING, CIVIL_ENGINEERING, ...',
+  })
   @IsEnum(CareerEnum, { message: 'Career is required' })
   career: CareerEnum;
 

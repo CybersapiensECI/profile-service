@@ -27,6 +27,7 @@ export class UserCreationController {
 
   @Post('student')
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(InternalServiceGuard)
   @ApiOperation({
     summary: 'Create user - STUDENT',
     description:
