@@ -5,7 +5,29 @@ import { AppModule } from './app.module';
 import { configureCloudinary } from './profile/infrastructure/config/cloudinary.config';
 import { GlobalExceptionFilter } from './profile/entrypoints/advice/global-exception.filter';
 
+/**
+ * Fail-fast on misconfiguration.
+ *
+ * In production the InternalServiceGuard rejects every /api/v1/internal/** call
+ * with 403 when INTERNAL_API_KEY is unset. That surfaces far downstream as an
+ * opaque "Profile service unavailable" in matching-service, so refuse to boot
+ * instead of serving a half-broken instance.
+ */
+function assertInternalApiKeyConfigured() {
+  if (process.env['NODE_ENV'] !== 'production') return;
+
+  if (!process.env['INTERNAL_API_KEY']) {
+    throw new Error(
+      'INTERNAL_API_KEY is not set. Routes under /api/v1/internal would reject ' +
+        'every inter-service call with 403 Forbidden, breaking matching-service. ' +
+        'Set INTERNAL_API_KEY on this container to the same value used by the ' +
+        'services that call it (matching-service, identity-service).',
+    );
+  }
+}
+
 async function bootstrap() {
+  assertInternalApiKeyConfigured();
   configureCloudinary();
 
   const app = await NestFactory.create(AppModule);
