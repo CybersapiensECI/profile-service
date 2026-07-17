@@ -21,6 +21,7 @@ import { CloudinaryAdapter } from './infrastructure/adapters/adapter/cloudinary-
 import { UserType } from './infrastructure/adapters/persistence/entity/user-type.enum';
 import { RabbitMQFriendshipPublisher, RABBITMQ_CLIENT } from './infrastructure/external/rabbitmq-friendship.publisher';
 import { MatchingServiceAdapter } from './infrastructure/external/matching/matching-service.adapter';
+import { IdentityEventConsumer } from './infrastructure/external/rabbitmq/identity-event.consumer';
 
 // ── Domain ports (tokens) ───────────────────────────────────────────────────
 import {
@@ -137,6 +138,7 @@ import { UserGamificationController } from './entrypoints/rest/controller/user-g
     { provide: IMAGE_STORAGE_PORT, useClass: CloudinaryAdapter },
     { provide: TAG_CATALOG_PORT, useClass: MatchingServiceAdapter },
     { provide: EVENT_PUBLISHER_PORT, useClass: RabbitMQFriendshipPublisher },
+    IdentityEventConsumer,
 
     // ── Application mapper ────────────────────────────────────────────────────
     UserMapper,
