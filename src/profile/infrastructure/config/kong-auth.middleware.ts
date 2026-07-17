@@ -1,4 +1,5 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 
 // Equivalente a OncePerRequestFilter de Spring — se ejecuta una vez por request
@@ -19,6 +20,11 @@ export class KongAuthMiddleware implements NestMiddleware {
 
       if (parts.length !== 3) return next();
 
+      if (!this.signatureValid(parts[0], parts[1], parts[2])) {
+        this.logger.warn('JWT con firma invalida');
+        return next();
+      }
+
       const decoded = Buffer.from(parts[1], 'base64url').toString('utf8');
       const claims = JSON.parse(decoded) as Record<string, unknown>;
 
@@ -35,6 +41,29 @@ export class KongAuthMiddleware implements NestMiddleware {
     }
 
     next();
+  }
+
+  private signatureValid(
+    header: string,
+    payload: string,
+    signature: string,
+  ): boolean {
+    const secret = process.env['APP_JWT_SECRET'];
+    if (!secret) {
+      // Fail loud: never trust an unverifiable token.
+      this.logger.error('APP_JWT_SECRET no esta configurado. Rechazando token.');
+      return false;
+    }
+
+    const expected = createHmac('sha256', secret)
+      .update(`${header}.${payload}`)
+      .digest('base64url');
+
+    const expectedBuf = Buffer.from(expected);
+    const actualBuf = Buffer.from(signature);
+    if (expectedBuf.length !== actualBuf.length) return false;
+
+    return timingSafeEqual(expectedBuf, actualBuf);
   }
 
   private readTextClaim(
